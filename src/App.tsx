@@ -1,11 +1,18 @@
+import { useEffect } from "react";
 import BudgeForm from "./components/BudgeForm";
 import BudgetTracker from "./components/BudgetTracker";
 import ExpenseList from "./components/ExpenseList";
 import ExpenseModal from "./components/ExpenseModal";
 import { useBudget } from "./hooks/useBudget";
+import FilterByCategory from "./components/FilterByCategory";
 
 function App() {
   const { state } = useBudget();
+
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(state.expenses));
+    localStorage.setItem("budge", state.budget.toString());
+  }, [state.expenses, state.budget]);
 
   return (
     <>
@@ -21,10 +28,11 @@ function App() {
 
       {state.budget > 0 && (
         <main className="max-w-3xl mx-auto py-10">
+          <FilterByCategory />
           <ExpenseList />
           <ExpenseModal />
         </main>
-      )}  
+      )}
     </>
   );
 }

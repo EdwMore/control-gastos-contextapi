@@ -17,7 +17,9 @@ export default function ExpenseForm() {
 
   const [error, setError] = useState("");
 
-  const { state, dispatch } = useBudget();
+  const [previousAmount, setPreviousAmount] = useState(0);
+
+  const { state, dispatch, remainingBudget } = useBudget();
 
   useEffect(() => {
     if (state.editingId) {
@@ -26,6 +28,7 @@ export default function ExpenseForm() {
       )[0];
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setExpense(editingExpense);
+      setPreviousAmount(editingExpense.amount);
     }
   }, [state.editingId, state.expenses]);
 
@@ -56,6 +59,13 @@ export default function ExpenseForm() {
       return;
     }
 
+    if (expense.amount - previousAmount > remainingBudget) {
+      console.log(expense.amount - previousAmount);
+
+      setError("La cantidad se sale del presupuesto");
+      return;
+    }
+
     // Agregar o Actualizar
 
     if (state.editingId) {
@@ -73,6 +83,7 @@ export default function ExpenseForm() {
       category: "",
       date: new Date(),
     });
+    setPreviousAmount(0);
   };
 
   return (
@@ -144,7 +155,6 @@ export default function ExpenseForm() {
         type="submit"
         className="bg-blue-600 cursor-pointer w-full p-2 text-white uppercase font-bold rounded-lg"
         value={`${state.editingId ? "Actualizar Gasto" : "Registrar Gasto"}`}
-
       />
     </form>
   );
